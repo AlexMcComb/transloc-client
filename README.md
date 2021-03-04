@@ -1,70 +1,39 @@
-# Getting Started with Create React App
+# Off-Site Coding Test
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Setup
 
-## Available Scripts
+1. Clone down this repository. You will need `node` and `npm` installed globally on your machine.
 
-In the project directory, you can run:
+2. Installation:
 
-### `yarn start`
+`npm install`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+3. Add the provided database url in `.env` as: `REACT_APP_DATABASE_URL` to connect to the deployed database and server
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+4. To Start The App:
 
-### `yarn test`
+`npm start`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+To Visit App:
 
-### `yarn build`
+`localhost:3000` or `https://transloc-client.herokuapp.com/`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+To Use:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Click anywhere on the map to create a bounding box and get results!
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+# Reflection
 
-### `yarn eject`
+## Backend
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+The challenge with the backend - and the entire app really - was the large dataset to deal with. On the backend I considered
+using gRPC to send binary files over the wire to reduce the size, but decided against it due to there not being official
+support for React along with other optimizations I made, where ultimately I think the difference would have been trivial.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+First I cleaned the dataset to remove any null values. Next, to reduce the size of what was being sent, I used the PostGIS extension for my Postgres database that allowed me to cluster the points that were near each other while also removing outliers with a SQL query. This dramatically reduced the size of the points being sent while not losing much information for the heat map. After testing using Node.js and Express with the response being compressed with gzip, I found the response times and sizes to be low.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## Front-End
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+On the front-end, I went with react-map-gl to use React and Mapbox-GL together. Since MapBox is using WebGL, the performance of the heat map is fairly snappy even with large queries. I also like the visualization that MapBox provides for heat maps and its integration with React.
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Overall this was a good lesson in dealing with large data sets and enjoyed learning some new techniques to handle them.
